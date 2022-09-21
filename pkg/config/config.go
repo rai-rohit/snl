@@ -23,6 +23,7 @@ func Load() (*Config, error) {
 	yamlFile, err := ioutil.ReadFile("/home/rohit/go/src/snakes_ladders/config.yaml")
 	if err != nil {
 		log.Printf("yamlFile.Get err :%v ", err)
+		return &c,err 
 	}
 	err = yaml.Unmarshal(yamlFile, &c)
 	if err != nil {
