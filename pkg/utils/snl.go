@@ -17,6 +17,7 @@ func GetSNl() error {
 		xl = getLadders()
 		xs = getSnakes()
 
+		// cross checking 
 		if uniqueSnL(xs, xl) {
 			break
 		}
@@ -73,14 +74,15 @@ func getLadders() []models.Ladder {
 	return xl
 }
 
-func uniqueSnakes(snakes []models.Snake) bool {
+// no two snakes should have same head
+func uniqueSnakes(snakes []models.Snake) bool { 
 	unique := make(map[int]bool)
 	for _, v := range snakes {
 		unique[v.Head] = true
 	}
 	return len(unique) == len(snakes)
 }
-
+//no two ladders should have same start point
 func uniqueLadders(ladders []models.Ladder) bool {
 	unique := make(map[int]bool)
 	for _, v := range ladders {
@@ -90,6 +92,7 @@ func uniqueLadders(ladders []models.Ladder) bool {
 }
 
 func uniqueSnL(snakes []models.Snake, ladders []models.Ladder) bool {
+	// any snake's head should be at the bottom point of any ladder
 	unique := make(map[int]bool)
 	for i, v := range ladders {
 		unique[v.Low] = true
@@ -98,6 +101,7 @@ func uniqueSnL(snakes []models.Snake, ladders []models.Ladder) bool {
 	if len(unique) != len(snakes)+len(ladders) {
 		return false
 	}
+	// any snake's head should not be at the top point of any ladder
 	unique2 := make(map[int]bool)
 	for i, v := range ladders {
 		unique2[v.High] = true
@@ -106,6 +110,7 @@ func uniqueSnL(snakes []models.Snake, ladders []models.Ladder) bool {
 	if len(unique2) != len(snakes)+len(ladders) {
 		return false
 	}
+	// any snake's tail should not be at the bottom of any ladder
 	unique3 := make(map[int]bool)
 	for i, v := range ladders {
 		unique3[v.Low] = true
