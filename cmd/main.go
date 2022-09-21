@@ -16,11 +16,13 @@ func main() {
 	config, err := config.Load()
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	
 	err = database.Connect(config)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	fmt.Println("DB connected successfully!!")
 

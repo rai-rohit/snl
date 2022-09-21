@@ -22,6 +22,7 @@ func Authorize(hf http.Handler) http.Handler {
 			_, err := utils.Parse(tkn)
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
+				w.Write([]byte("Please login."))
 				return
 			} else {
 				hf.ServeHTTP(w, r)

@@ -20,7 +20,7 @@ func StartGame(w http.ResponseWriter, r *http.Request) {
 	err := utils.GetSNl()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, "error while getting data from DB")
+		fmt.Fprintln(w, "error while generating snakes and ladders")
 		return
 	}
 
@@ -69,7 +69,7 @@ func AddPlayer(w http.ResponseWriter, r *http.Request) {
 }
 
 func DiceRoll(w http.ResponseWriter, r *http.Request) {
-	
+
 	id := r.URL.Query().Get("id")
 	intId, _ := strconv.Atoi(id)
 	player, err := database.GetPlayerById(intId)
@@ -138,20 +138,20 @@ func GetPlayerPosition(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
 	intId, err := strconv.ParseInt(id, 0, 0)
-	if err !=nil{
-		fmt.Fprintf(w,"error :%v",err)
+	if err != nil {
+		fmt.Fprintf(w, "error :%v", err)
 		return
 	}
 
-	player, er:= database.GetPlayerById(int(intId))
-	if er !=nil{
-		fmt.Fprintf(w,"error :%v",er)
+	player, er := database.GetPlayerById(int(intId))
+	if er != nil {
+		fmt.Fprintf(w, "error :%v", er)
 		return
 	}
 
 	var m = models.Response{
 		Message: "Player Postion Details  Is As Follows",
-		Data: player,
+		Data:    player,
 	}
 	resp, err := json.Marshal(m)
 	if err != nil {
@@ -235,4 +235,3 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintln(w, "registration successful")
 }
-
