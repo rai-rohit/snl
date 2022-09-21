@@ -20,9 +20,9 @@ func main() {
 	
 	err = database.Connect(config)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println(err)
 	}
-	fmt.Printf("DB connected successfully!!\n")
+	fmt.Println("DB connected successfully!!")
 
 	router := mux.NewRouter()
 	routes.RegisterRoutes(router)

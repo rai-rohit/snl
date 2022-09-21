@@ -15,5 +15,4 @@ func RegisterRoutes(router *mux.Router){
 	router.HandleFunc("/snl", controllers.SnlPositions).Methods("GET")
 	router.HandleFunc("/login", controllers.Login).Methods("POST")
 	router.HandleFunc("/register", controllers.Register).Methods("POST")
-	// router.HandleFunc("/stats", controllers.Stats).Methods("GET")
 }

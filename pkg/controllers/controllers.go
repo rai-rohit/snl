@@ -17,19 +17,14 @@ func StartGame(w http.ResponseWriter, r *http.Request) {
 
 	database.DB.AutoMigrate(&models.Player{}, &models.Snake{}, &models.Ladder{})
 
-	err := utils.GetSnakes()
+	err := utils.GetSNl()
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, "error : Data insertion failed")
+		fmt.Fprintln(w, "error while getting data from DB")
 		return
 	}
-	err = utils.GetLadders()
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprintln(w, "error : Data insertion failed")
-		return
-	}
-	w.Header().Set("Content-Type", "text/html")
+
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("New Game has begun!!"))
 }
@@ -39,12 +34,13 @@ func AddPlayer(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&p)
 	if err != nil {
 		fmt.Fprintf(w, "error while decoding - \n %v", err)
+		return
 	}
 
 	players := make([]models.Player, 0)
 	if len(p.Names) != p.Number {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintln(w, "error : Please enter valid number of players")
+		fmt.Fprintln(w, "error : Please enter valid number of players.")
 		return
 	}
 
@@ -73,7 +69,7 @@ func AddPlayer(w http.ResponseWriter, r *http.Request) {
 }
 
 func DiceRoll(w http.ResponseWriter, r *http.Request) {
-
+	
 	id := r.URL.Query().Get("id")
 	intId, _ := strconv.Atoi(id)
 	player, err := database.GetPlayerById(intId)
@@ -85,20 +81,21 @@ func DiceRoll(w http.ResponseWriter, r *http.Request) {
 
 	players, err := database.GetAllPlayers()
 	if err != nil {
-		fmt.Fprintf(w, "error - %v", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "error while retrieving data")
 		return
 	}
 
-	var m models.Response = models.Response{
+	var m = models.Response{
 		Message: "Sorry,not your turn",
 	}
-
 	resp, err := json.Marshal(m)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintln(w, "error :", err)
 		return
 	}
+
 	for _, v := range players {
 		if player.NumTurns > v.NumTurns {
 			w.Header().Set("Content-Type", "application/json")
@@ -107,8 +104,8 @@ func DiceRoll(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	x := utils.RandGenerator(6)
 
+	x := utils.RandGenerator(6)
 	if x != 6 {
 		fmt.Fprintf(w, "you got %d on dice roll\n", x)
 		player.CurrPos += x
@@ -140,9 +137,31 @@ func DiceRoll(w http.ResponseWriter, r *http.Request) {
 func GetPlayerPosition(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Query().Get("id")
 
-	intId, _ := strconv.ParseInt(id, 0, 0)
-	player, _ := database.GetPlayerById(int(intId))
-	fmt.Fprintf(w, "Player Postion Details  Is As Follow:\n%+v", player)
+	intId, err := strconv.ParseInt(id, 0, 0)
+	if err !=nil{
+		fmt.Fprintf(w,"error :%v",err)
+		return
+	}
+
+	player, er:= database.GetPlayerById(int(intId))
+	if er !=nil{
+		fmt.Fprintf(w,"error :%v",er)
+		return
+	}
+
+	var m = models.Response{
+		Message: "Player Postion Details  Is As Follows",
+		Data: player,
+	}
+	resp, err := json.Marshal(m)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintln(w, "error :", err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(resp)
 }
 
 func GetAllPlayersPositions(w http.ResponseWriter, r *http.Request) {
@@ -169,12 +188,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		fmt.Fprintln(w,"error while decoding-",err)
+		fmt.Fprintln(w, "error while decoding-", err)
 	}
 
 	err = database.MatchUserCredentials(user)
 	if err != nil {
-		fmt.Fprintln(w,"error encountered-",err)
+		fmt.Fprintln(w, "error encountered-", err)
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte("username and pass do not match"))
 		return
@@ -217,10 +236,3 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "registration successful")
 }
 
-// func Stats(w http.ResponseWriter, r *http.Request){
-// 	var stats models.Simulation
-// 	err := json.NewDecoder(r.Body).Decode(&stats)
-// 	if err != nil {
-// 		fmt.Fprintf(w, "error while decoding - \n %v", err)
-// 	}
-// }

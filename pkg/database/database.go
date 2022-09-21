@@ -15,7 +15,7 @@ func Connect(config *config.Config) error {
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", config.DbConfig.User, config.DbConfig.Password, config.DbConfig.Host, config.DbConfig.Port, config.DbConfig.Name)
 	d, err := gorm.Open(mysql.Open(connStr), &gorm.Config{})
 	if err != nil {
-		return (err)
+		return err
 	}
 	DB = d
 	return nil
@@ -57,7 +57,6 @@ func SaveUser(u models.User) error {
 	if db.Error != nil {
 		return db.Error
 	}
-
 	return nil
 }
 
@@ -67,7 +66,6 @@ func MatchUserCredentials(u models.User) error {
 	if db.Error != nil {
 		return db.Error
 	}
-
 	if u.Password != password {
 		return fmt.Errorf("password match failed %s", u.Password)
 	}

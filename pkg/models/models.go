@@ -40,18 +40,8 @@ type Response struct {
 }
 
 type User struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
+	Name     string `json:"name" `
+	Email    string `json:"email" gorm:"primarykey"`
 	Password string `json:"password"`
 }
 
-// type Simulation struct {
-// 	Id          int    `json:"id"`
-// 	NumRoll     int    `json:"numroll"`
-// 	Climb       int    `json:"climb"`
-// 	Slide       int    `json:"slide"`
-// 	Turn        string `json:"turn"`
-// 	LuckyRoll   int    `json:"luckyroll"`
-// 	UnluckyRoll int    `json:"unluckyroll"`
-// 	IsWinner    bool   `json:"iswinner"`
-// }
